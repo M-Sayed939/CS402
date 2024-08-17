@@ -147,7 +147,6 @@ public class DES {
         rounds.clear();
         String binaryKey = convertToBinary(key);
 
-        // Pad the key with zeros if it's less than 64 bits
         if (binaryKey.length() < 64) {
             binaryKey = String.format("%64s", binaryKey).replace(' ', '0');
         }
@@ -155,11 +154,9 @@ public class DES {
         String binaryInput = convertToBinary(inputText);
         StringBuilder encryptedText = new StringBuilder();
 
-        // Divide input into 64-bit blocks
         for (int i = 0; i < binaryInput.length(); i += 64) {
             String block = binaryInput.substring(i, Math.min(i + 64, binaryInput.length()));
 
-            // Pad the block with zeros if it's less than 64 bits
             if (block.length() < 64) {
                 block = String.format("%64s", block).replace(' ', '0');
             }

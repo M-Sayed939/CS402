@@ -27,7 +27,7 @@ public class HelloApplication extends Application {
     private DES des=new
             DES();
     private CheckBox fileCheckBox;
-    private final File defaultDirectory = new File("C:\\Users\\pc\\Downloads\\ID\\demo2");
+    private final File defaultDirectory = new File("C:\\Users\\pc\\Downloads\\ID\\demo2\\Files");
     private boolean isSubstitutionKeyImported = false;
 
     @Override
@@ -73,14 +73,22 @@ public class HelloApplication extends Application {
 
         Button generateKeyButton = new Button("Generate Key");
         generateKeyButton.setOnAction(e -> generateOneTimePadKey());
+        Button printRoundBtn = new Button("Print Rounds");
+        printRoundBtn.setDisable(true);
+        printRoundBtn.setOnAction(e -> printRoundsToFile());
+        cipherComboBox.setOnAction(e -> {
+            String selectedcipher = cipherComboBox.getValue();
+            printRoundBtn.setDisable(!"DES".equals(selectedcipher));
+        });
 
         HBox keyBox = new HBox(10, keyLabel, keyField, importKeyButton, generateKeyButton);
         keyBox.setAlignment(Pos.CENTER_LEFT);
         HBox cipherBox = new HBox(10, cipherLabel, cipherComboBox);
         cipherBox.setAlignment(Pos.CENTER_LEFT);
 
-        HBox actionBox = new HBox(10, actionLabel, actionComboBox, executeButton, exportResultButton);
+        HBox actionBox = new HBox(10, actionLabel, actionComboBox, executeButton, exportResultButton,printRoundBtn);
         actionBox.setAlignment(Pos.CENTER_LEFT);
+
 
         VBox layout = new VBox(10, keyBox,cipherBox, actionBox, new Label("Input Text:"), inputTextArea,fileCheckBox,importFileButton, new Label("Output Text:"), outputTextArea);
         layout.setPadding(new Insets(10));
@@ -177,6 +185,23 @@ public class HelloApplication extends Application {
         reader.close();
         cryptology.setSubstitutionMap(substitutionMap);
     }
+    private void printRoundsToFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Rounds");
+        fileChooser.setInitialDirectory(defaultDirectory);
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
+                for(String round: des.getRounds()){
+                writer.write(round);
+                writer.newLine();
+                }
+                showAlert("Rounds successfully printed to " + file.getAbsolutePath());
+            } catch (IOException e) {
+                showAlert("Failed to print rounds: " + e.getMessage());
+            }
+        }
+    }
 
     private void exportResult() {
         FileChooser fileChooser = new FileChooser();
@@ -230,12 +255,12 @@ public class HelloApplication extends Application {
                     showAlert("Invalid key format for Substitution Cipher. Please enter an alphabetic.");
                 }
             }
-//            case "DES" -> {
-//                if (!keyText.matches("[0-9A-Fa-f]{16}")) {
-//                    isValid = false;
-//                    showAlert("Invalid key format for DES Cipher. Please enter a 64-bit hexadecimal key.");
-//                }
-//            }
+            case "DES" -> {
+                if (keyText.length()!=8) {
+                    isValid = false;
+                    showAlert("Invalid key format for DES Cipher. Please enter a 8-bit key.");
+                }
+            }
 //            default -> {
 //                if (!keyText.matches("\\d+")) {
 //                    isValid = false;

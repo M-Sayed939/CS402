@@ -1,5 +1,8 @@
 package com.example.demo2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DES {
     private static final int[][][] S = {
             {
@@ -119,9 +122,14 @@ public class DES {
             1, 2, 2, 2, 2, 2, 2, 1
     };
 
+    private final List<String> rounds = new ArrayList<>();
     private String key;
     private String inputText;
     private String outputText;
+
+    public List<String> getRounds() {
+        return rounds;
+    }
 
     public void setKey(String key) {
         this.key = key;
@@ -136,64 +144,105 @@ public class DES {
     }
 
     public void encDES() {
-        String binaryKey = hexToBinary(key);
-        String binaryInput = hexToBinary(inputText);
-        binaryInput = permute(binaryInput, IP);
-        System.out.println("Initial Permutation: " + binaryToHex(binaryInput));
+        rounds.clear();
+        String binaryKey = convertToBinary(key);
 
-        String left = binaryInput.substring(0, 32);
-        String right = binaryInput.substring(32, 64);
-
-        String[] roundKeys = generateRoundKeys(binaryKey);
-
-        for (int i = 0; i < 16; i++) {
-            String rightExpanded = expand(right);
-            String xorResult = xor(rightExpanded, roundKeys[i]);
-            String sBoxResult = sBoxTransform(xorResult);
-            String pResult = permute(sBoxResult, P);
-
-            String newRight = xor(left, pResult);
-            left = right;
-            right = newRight;
-
-            System.out.printf("Round %2d: Left = %s, Right = %s, Round Key = %s%n",
-                    i + 1, binaryToHex(left), binaryToHex(right), binaryToHex(roundKeys[i]));
+        // Pad the key with zeros if it's less than 64 bits
+        if (binaryKey.length() < 64) {
+            binaryKey = String.format("%64s", binaryKey).replace(' ', '0');
         }
 
-        String preOutput = right + left;
-        System.out.println("After Combination: " + binaryToHex(preOutput));
-        outputText = binaryToHex(permute(preOutput, IP_INV));
-    }
+        String binaryInput = convertToBinary(inputText);
+        StringBuilder encryptedText = new StringBuilder();
 
+        // Divide input into 64-bit blocks
+        for (int i = 0; i < binaryInput.length(); i += 64) {
+            String block = binaryInput.substring(i, Math.min(i + 64, binaryInput.length()));
+
+            // Pad the block with zeros if it's less than 64 bits
+            if (block.length() < 64) {
+                block = String.format("%64s", block).replace(' ', '0');
+            }
+
+            block = permute(block, IP);
+            System.out.println("Initial Permutation: " + binaryToHex(block));
+
+            String left = block.substring(0, 32);
+            String right = block.substring(32, 64);
+
+            String[] roundKeys = generateRoundKeys(binaryKey);
+
+            for (int j = 0; j < 16; j++) {
+                String rightExpanded = expand(right);
+                String xorResult = xor(rightExpanded, roundKeys[j]);
+                String sBoxResult = sBoxTransform(xorResult);
+                String pResult = permute(sBoxResult, P);
+
+                String newRight = xor(left, pResult);
+                left = right;
+                right = newRight;
+
+                System.out.printf("Round %2d: Left = %s, Right = %s, Round Key = %s%n",
+                        j + 1, binaryToHex(left), binaryToHex(right), binaryToHex(roundKeys[j]));
+                rounds.add("Round " + (j + 1) + ": Left = " + binaryToHex(left) + ", Right = "
+                        + binaryToHex(right) + ", Round Key = " + binaryToHex(roundKeys[j]));
+            }
+
+            String preOutput = right + left;
+            System.out.println("After Combination: " + binaryToHex(preOutput));
+            encryptedText.append(binaryToHex(permute(preOutput, IP_INV)));
+        }
+
+        outputText = encryptedText.toString();
+    }
     public void decDES() {
-        String binaryKey = hexToBinary(key);
-        String binaryInput = hexToBinary(inputText);
-        binaryInput = permute(binaryInput, IP);
-        System.out.println("Initial Permutation: " + binaryToHex(binaryInput));
-
-        String left = binaryInput.substring(0, 32);
-        String right = binaryInput.substring(32, 64);
-
-        String[] roundKeys = generateRoundKeys(binaryKey);
-
-        for (int i = 15; i >= 0; i--) {
-            String rightExpanded = expand(right);
-            String xorResult = xor(rightExpanded, roundKeys[i]);
-            String sBoxResult = sBoxTransform(xorResult);
-            String pResult = permute(sBoxResult, P);
-
-            String newRight = xor(left, pResult);
-            left = right;
-            right = newRight;
-            System.out.printf("Round %2d: Left = %s, Right = %s, Round Key = %s%n",
-                    16 - i, binaryToHex(left), binaryToHex(right), binaryToHex(roundKeys[i]));
+        rounds.clear();
+        String binaryKey = convertToBinary(key);
+        if (binaryKey.length() < 64) {
+            binaryKey = String.format("%64s", binaryKey).replace(' ', '0');
         }
 
-        String preOutput = right + left;
-        System.out.println("After Combination: " + binaryToHex(preOutput));
-        outputText = binaryToHex(permute(preOutput, IP_INV));
-    }
+        String binaryInput = hexToBinary(inputText);
+        StringBuilder decryptedText = new StringBuilder();
 
+        for (int i = 0; i < binaryInput.length(); i += 64) {
+            String block = binaryInput.substring(i, Math.min(i + 64, binaryInput.length()));
+
+            if (block.length() < 64) {
+                block = String.format("%64s", block).replace(' ', '0');
+            }
+
+            block = permute(block, IP);
+            System.out.println("Initial Permutation: " + binaryToHex(block));
+
+            String left = block.substring(0, 32);
+            String right = block.substring(32, 64);
+
+            String[] roundKeys = generateRoundKeys(binaryKey);
+
+            for (int j = 15; j >= 0; j--) {
+                String rightExpanded = expand(right);
+                String xorResult = xor(rightExpanded, roundKeys[j]);
+                String sBoxResult = sBoxTransform(xorResult);
+                String pResult = permute(sBoxResult, P);
+
+                String newRight = xor(left, pResult);
+                left = right;
+                right = newRight;
+
+                System.out.printf("Round %2d: Left = %s, Right = %s, Round Key = %s%n",
+                        16 - j, binaryToHex(left), binaryToHex(right), binaryToHex(roundKeys[j]));
+                rounds.add("Round " + (16 - j) + ": Left = " + binaryToHex(left) + ", Right = "
+                        + binaryToHex(right) + ", Round Key = " + binaryToHex(roundKeys[j]));
+            }
+
+            String preOutput = right + left;
+            System.out.println("After Combination: " + binaryToHex(preOutput));
+            decryptedText.append(binaryToText(permute(preOutput, IP_INV)));
+        }
+
+        outputText = decryptedText.toString();
+    }
     private String permute(String input, int[] table) {
         StringBuilder output = new StringBuilder();
         for (int i : table) {
@@ -210,7 +259,7 @@ public class DES {
         StringBuilder output = new StringBuilder();
         for (int i = 0; i < 8; i++) {
             String block = input.substring(i * 6, (i + 1) * 6);
-            int row = Integer.parseInt("" + block.charAt(0) + block.charAt(5), 2);
+            int row = Integer.parseInt(String.valueOf(block.charAt(0)) + block.charAt(5), 2);
             int col = Integer.parseInt(block.substring(1, 5), 2);
             int sBoxValue = S[i][row][col];
             output.append(String.format("%4s", Integer.toBinaryString(sBoxValue)).replace(' ', '0'));
@@ -226,8 +275,8 @@ public class DES {
         return result.toString();
     }
 
-    private static int[] circular_left_shift(int a[], int j) {
-        int b[] = new int[a.length];
+    private static int[] circular_left_shift(int[] a, int j) {
+        int[] b = new int[a.length];
         int index;
         for (int i = 0; i < a.length; i++) {
             index = (i - j) % a.length;
@@ -278,6 +327,7 @@ public class DES {
         }
         return hex.toString().toUpperCase();
     }
+
     private String textToBinary(String text) {
         StringBuilder binary = new StringBuilder();
         for (char character : text.toCharArray()) {
@@ -288,6 +338,7 @@ public class DES {
         }
         return binary.toString();
     }
+
     private String convertToBinary(String input) {
         if (input.matches("[0-9A-Fa-f]+") && input.length() % 2 == 0) {
             return hexToBinary(input);
@@ -295,6 +346,7 @@ public class DES {
             return textToBinary(input);
         }
     }
+
     private String binaryToText(String binary) {
         StringBuilder text = new StringBuilder();
         for (int i = 0; i < binary.length(); i += 8) {
@@ -304,6 +356,7 @@ public class DES {
         }
         return text.toString();
     }
+
     public static void main(String[] args) {
         DES des = new DES();
         des.setKey("AABB09182736CCDD");

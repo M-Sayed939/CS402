@@ -146,12 +146,17 @@ public class DES {
     public void encDES() {
         rounds.clear();
         String binaryKey = convertToBinary(key);
-
-        if (binaryKey.length() < 64) {
+        if (binaryKey.length() > 64) {
+            binaryKey = binaryKey.substring(0,64);
+        }else if (binaryKey.length() < 64) {
             binaryKey = String.format("%64s", binaryKey).replace(' ', '0');
         }
-
+        System.out.println("Key: " + binaryToText(binaryKey));
         String binaryInput = convertToBinary(inputText);
+        int padding = 64 - (binaryInput.length()%64);
+        if (padding<64){
+            binaryInput = String.format("%-" + (binaryInput.length() + padding) + "s", binaryInput).replace(' ', '0');
+            }
         StringBuilder encryptedText = new StringBuilder();
 
         for (int i = 0; i < binaryInput.length(); i += 64) {
@@ -187,19 +192,26 @@ public class DES {
 
             String preOutput = right + left;
             System.out.println("After Combination: " + binaryToHex(preOutput));
-            encryptedText.append(binaryToHex(permute(preOutput, IP_INV)));
+            encryptedText.append(binaryToText(permute(preOutput, IP_INV)));
         }
 
-        outputText = encryptedText.toString();
+        outputText =encryptedText.toString();
     }
     public void decDES() {
         rounds.clear();
         String binaryKey = convertToBinary(key);
-        if (binaryKey.length() < 64) {
+        if (binaryKey.length() > 64) {
+            binaryKey = binaryKey.substring(0,64);
+        }else if (binaryKey.length() < 64) {
             binaryKey = String.format("%64s", binaryKey).replace(' ', '0');
         }
+        System.out.println("Key: " + binaryToText(binaryKey));
 
-        String binaryInput = hexToBinary(inputText);
+        String binaryInput = textToBinary(inputText);
+        int padding = 64 - (binaryInput.length()%64);
+        if (padding<64){
+            binaryInput = String.format("%-" + (binaryInput.length() + padding) + "s", binaryInput).replace(' ', '0');
+        }
         StringBuilder decryptedText = new StringBuilder();
 
         for (int i = 0; i < binaryInput.length(); i += 64) {
@@ -325,7 +337,17 @@ public class DES {
         return hex.toString().toUpperCase();
     }
 
-    private String textToBinary(String text) {
+
+
+    private String convertToBinary(String input) {
+        if (input.matches("[0-9A-Fa-f]+") && input.length() % 2 == 0) {
+            return hexToBinary(input);
+        } else {
+            return textToBinary(input);
+        }
+    }
+
+    private static String textToBinary(String text) {
         StringBuilder binary = new StringBuilder();
         for (char character : text.toCharArray()) {
             binary.append(
@@ -336,15 +358,7 @@ public class DES {
         return binary.toString();
     }
 
-    private String convertToBinary(String input) {
-        if (input.matches("[0-9A-Fa-f]+") && input.length() % 2 == 0) {
-            return hexToBinary(input);
-        } else {
-            return textToBinary(input);
-        }
-    }
-
-    private String binaryToText(String binary) {
+    private static String binaryToText(String binary) {
         StringBuilder text = new StringBuilder();
         for (int i = 0; i < binary.length(); i += 8) {
             String byteString = binary.substring(i, i + 8);
@@ -353,15 +367,36 @@ public class DES {
         }
         return text.toString();
     }
+    private String textToHex(String text) {
+        StringBuilder hex = new StringBuilder();
+        for (char character : text.toCharArray()) {
+            hex.append(String.format("%02X", (int) character));
+        }
+        return hex.toString();
+    }
+
+    private String hexToText(String hex) {
+        StringBuilder text = new StringBuilder();
+        for (int i = 0; i < hex.length(); i += 2) {
+            String str = hex.substring(i, i + 2);
+            text.append((char) Integer.parseInt(str, 16));
+        }
+        return text.toString();
+    }
 
     public static void main(String[] args) {
-        DES des = new DES();
-        des.setKey("AABB09182736CCDD");
-        des.setInputText("123456ABCD132536");
-        des.encDES();
-        System.out.println("Encrypted: " + des.getOutputText());
-        des.setInputText(des.getOutputText());
-        des.decDES();
-        System.out.println("Decrypted: " + des.getOutputText());
+//        DES des = new DES();
+//        des.setKey("AABB09182736CCDD");
+//        des.setInputText("123456ABCD132536");
+//        des.encDES();
+//        System.out.println("Encrypted: " + des.getOutputText());
+//        des.setInputText(des.getOutputText());
+//        des.decDES();
+//        System.out.println("Decrypted: " + des.getOutputText());
+        String x = "Mohamed Sayed";
+        x = textToBinary(x);
+        System.out.println(x);
+        String y = binaryToText(x);
+        System.out.println(y);
     }
 }

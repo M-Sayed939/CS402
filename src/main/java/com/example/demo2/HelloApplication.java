@@ -255,12 +255,12 @@ public class HelloApplication extends Application {
                     showAlert("Invalid key format for Substitution Cipher. Please enter an alphabetic.");
                 }
             }
-            case "DES" -> {
-                if (keyText.length()!=8) {
-                    isValid = false;
-                    showAlert("Invalid key format for DES Cipher. Please enter a 8-bit key.");
-                }
-            }
+//            case "DES" -> {
+//                if (keyText.length()!=8) {
+//                    isValid = false;
+//                    showAlert("Invalid key format for DES Cipher. Please enter a 8-bit key.");
+//                }
+//            }
 //            default -> {
 //                if (!keyText.matches("\\d+")) {
 //                    isValid = false;

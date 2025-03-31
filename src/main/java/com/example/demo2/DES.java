@@ -385,18 +385,16 @@ public class DES {
     }
 
     public static void main(String[] args) {
-//        DES des = new DES();
-//        des.setKey("AABB09182736CCDD");
-//        des.setInputText("123456ABCD132536");
-//        des.encDES();
-//        System.out.println("Encrypted: " + des.getOutputText());
-//        des.setInputText(des.getOutputText());
-//        des.decDES();
-//        System.out.println("Decrypted: " + des.getOutputText());
-        String x = "Mohamed Sayed";
-        x = textToBinary(x);
-        System.out.println(x);
-        String y = binaryToText(x);
-        System.out.println(y);
+        DES des = new DES();
+        des.setKey("mohammed");
+        des.setInputText("omar mourad fahim ahmed ");
+
+
+        des.encDES();
+        System.out.println("Encrypted: " + des.getOutputText());
+        des.setInputText(des.getOutputText());
+        des.decDES();
+        System.out.println("Decrypted: " + des.getOutputText());
+
     }
 }

@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class HelloApplication extends Application {
     private TextField keyField;
@@ -24,11 +23,12 @@ public class HelloApplication extends Application {
     private ComboBox<String> actionComboBox;
     private ComboBox<String> cipherComboBox;
     private Cryptology cryptology;
-    private DES des=new
-            DES();
+    private DES des = new DES();
+    private AES aes;
     private CheckBox fileCheckBox;
     private final File defaultDirectory = new File("C:\\Users\\pc\\Downloads\\ID\\demo2\\Files");
     private boolean isSubstitutionKeyImported = false;
+    private StringBuilder content = new StringBuilder();
 
     @Override
     public void start(Stage primaryStage) {
@@ -39,13 +39,12 @@ public class HelloApplication extends Application {
 
         Label cipherLabel = new Label("Cipher:");
         cipherComboBox = new ComboBox<>();
-        cipherComboBox.getItems().addAll("Caesar", "Affine", "Substitution","Playfair","One Time Pad","DES");
+        cipherComboBox.getItems().addAll("Caesar", "Affine", "Substitution", "Playfair", "One Time Pad", "DES", "AES");
         cipherComboBox.getSelectionModel().selectFirst();
-
 
         Label actionLabel = new Label("Action:");
         actionComboBox = new ComboBox<>();
-        actionComboBox.getItems().addAll("Encrypt", "Decrypt","Attack");
+        actionComboBox.getItems().addAll("Encrypt", "Decrypt", "Attack");
         actionComboBox.getSelectionModel().selectFirst();
 
         Button importKeyButton = new Button("Import Key");
@@ -77,8 +76,8 @@ public class HelloApplication extends Application {
         printRoundBtn.setDisable(true);
         printRoundBtn.setOnAction(e -> printRoundsToFile());
         cipherComboBox.setOnAction(e -> {
-            String selectedcipher = cipherComboBox.getValue();
-            printRoundBtn.setDisable(!"DES".equals(selectedcipher));
+            String selectedCipher = cipherComboBox.getValue();
+            printRoundBtn.setDisable(!"DES".equals(selectedCipher) && !"AES".equals(selectedCipher));
         });
 
         HBox keyBox = new HBox(10, keyLabel, keyField, importKeyButton, generateKeyButton);
@@ -86,11 +85,10 @@ public class HelloApplication extends Application {
         HBox cipherBox = new HBox(10, cipherLabel, cipherComboBox);
         cipherBox.setAlignment(Pos.CENTER_LEFT);
 
-        HBox actionBox = new HBox(10, actionLabel, actionComboBox, executeButton, exportResultButton,printRoundBtn);
+        HBox actionBox = new HBox(10, actionLabel, actionComboBox, executeButton, exportResultButton, printRoundBtn);
         actionBox.setAlignment(Pos.CENTER_LEFT);
 
-
-        VBox layout = new VBox(10, keyBox,cipherBox, actionBox, new Label("Input Text:"), inputTextArea,fileCheckBox,importFileButton, new Label("Output Text:"), outputTextArea);
+        VBox layout = new VBox(10, keyBox, cipherBox, actionBox, new Label("Input Text:"), inputTextArea, fileCheckBox, importFileButton, new Label("Output Text:"), outputTextArea);
         layout.setPadding(new Insets(10));
         layout.setStyle("-fx-background-color: #F0F0F0;");
         Scene scene = new Scene(layout, 600, 400);
@@ -98,6 +96,7 @@ public class HelloApplication extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
     private void generateOneTimePadKey() {
         String sCipher = cipherComboBox.getValue();
         if (!"One Time Pad".equals(sCipher)) {
@@ -105,7 +104,6 @@ public class HelloApplication extends Application {
             return;
         }
         String inputText = inputTextArea.getText();
-        System.out.println(inputText.length());
         if (inputText.isEmpty()) {
             showAlert("Please enter text to generate a key.");
             return;
@@ -116,7 +114,6 @@ public class HelloApplication extends Application {
         int prev = seed;
         for (int i = 0; i < inputText.length(); i++) {
             int next = (5 * prev + 13) % 26;
-            System.out.println(next);
             char randomChar = (char) ('A' + next);
             keyBuilder.append(randomChar);
             prev = next;
@@ -129,6 +126,7 @@ public class HelloApplication extends Application {
         inputTextArea.setEditable(!isFileMode);
         inputTextArea.setText("");
     }
+
     private void importFile() {
         if (!fileCheckBox.isSelected()) {
             showAlert("File mode is not enabled.");
@@ -160,7 +158,7 @@ public class HelloApplication extends Application {
                     isSubstitutionKeyImported = true;
                 } else {
                     String key = new String(Files.readAllBytes(Paths.get(file.getPath())));
-                    keyField.setText(key.trim());
+                    keyField.setText(key);
                 }
             } catch (IOException e) {
                 showAlert("Failed to import key: " + e.getMessage());
@@ -185,6 +183,7 @@ public class HelloApplication extends Application {
         reader.close();
         cryptology.setSubstitutionMap(substitutionMap);
     }
+
     private void printRoundsToFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Rounds");
@@ -192,9 +191,17 @@ public class HelloApplication extends Application {
         File file = fileChooser.showSaveDialog(null);
         if (file != null) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
-                for(String round: des.getRounds()){
-                writer.write(round);
-                writer.newLine();
+                String selectedCipher = cipherComboBox.getValue();
+                if ("DES".equals(selectedCipher)) {
+                    for (String round : des.getRounds()) {
+                        writer.write(round);
+                        writer.newLine();
+                    }
+                } else if ("AES".equals(selectedCipher)) {
+                    for (String round : aes.getRounds()) {
+                        writer.write(round);
+                        writer.newLine();
+                    }
                 }
                 showAlert("Rounds successfully printed to " + file.getAbsolutePath());
             } catch (IOException e) {
@@ -215,21 +222,19 @@ public class HelloApplication extends Application {
             } catch (IOException e) {
                 showAlert("Failed to export result: " + e.getMessage());
             }
-//            try {
-//                Files.write(Paths.get(file.getPath()), outputTextArea.getText().getBytes());
-//            } catch (IOException e) {
-//                showAlert("Failed to export result: " + e.getMessage());
-//            }
         }
     }
-    private void cipherAlgorithm(){
-        String keyText = keyField.getText().trim();
+
+
+    private void cipherAlgorithm() {
+        String keyText = keyField.getText();
         String inputText = inputTextArea.getText();
         String action = actionComboBox.getValue();
         String cipher = cipherComboBox.getValue();
-        String result = "";
-        Cryptology.key = keyText;
+        StringBuilder result = new StringBuilder();
         boolean isValid = true;
+
+
         switch (cipher) {
             case "Affine" -> {
                 if (!keyText.matches("\\d+ \\d+")) {
@@ -237,61 +242,26 @@ public class HelloApplication extends Application {
                     showAlert("Invalid key format for Affine cipher. Please enter two integers separated by a space.");
                 }
             }
-//            case "One Time Pad" -> {
-//                if (!keyText.matches("[A-Z]+") || keyText.length() != inputText.length()) {
-//                    isValid = false;
-//                    showAlert("Invalid key format for One Time Pad cipher. Please enter a key with the same length as the input text.");
-//                }
-//            }
-            case "Playfair"->{
-                if (keyText.matches("\\d+")){
-                    isValid = false;
-                    showAlert("Invalid key format for Playfair Cipher. Please enter an alphabetic.");
-                }
-            }
-            case "Substitution" -> {
+            case "Playfair", "Substitution" -> {
                 if (keyText.matches("\\d+")) {
                     isValid = false;
-                    showAlert("Invalid key format for Substitution Cipher. Please enter an alphabetic.");
+                    showAlert("Invalid key format for " + cipher + " Cipher. Please enter an alphabetic key.");
                 }
             }
-//            case "DES" -> {
-//                if (keyText.length()!=8) {
-//                    isValid = false;
-//                    showAlert("Invalid key format for DES Cipher. Please enter a 8-bit key.");
-//                }
-//            }
-//            default -> {
-//                if (!keyText.matches("\\d+")) {
-//                    isValid = false;
-//                    showAlert("Invalid key format. Please enter an integer.");
-//                }
-//            }
         }
+
         if (!isValid) {
             return;
         }
-        switch (cipher) {
-            case "Caesar" -> {
-                if ("Encrypt".equals(action)) {
-                    Cryptology.pText = inputText;
-                    result = cryptology.EncCaesar();
-                } else if ("Decrypt".equals(action)) {
-                    Cryptology.cText = inputText;
-                    result = cryptology.DecCaesar();
-                } else if ("Attack".equals(action)) {
-                    Cryptology.cText = inputText;
-                    result = cryptology.AttackCaesar();
 
-                }
-            }
+        switch (cipher) {
             case "Affine" -> {
                 if ("Encrypt".equals(action)) {
                     Cryptology.pText = inputText;
-                    result = cryptology.EncAffine();
+                    result.append(cryptology.EncAffine());
                 } else if ("Decrypt".equals(action)) {
                     Cryptology.cText = inputText;
-                    result = cryptology.DecAffine();
+                    result.append(cryptology.DecAffine());
                 } else if ("Attack".equals(action)) {
                     showAlert("Attack functionality is not implemented for Affine cipher.");
                     return;
@@ -303,9 +273,9 @@ public class HelloApplication extends Application {
                     return;
                 }
                 if ("Encrypt".equals(action)) {
-                    result = cryptology.encryptSubstitution(inputText);
+                    result.append(cryptology.encryptSubstitution(inputText));
                 } else if ("Decrypt".equals(action)) {
-                    result = cryptology.decryptSubstitution(inputText);
+                    result.append(cryptology.decryptSubstitution(inputText));
                 } else if ("Attack".equals(action)) {
                     showAlert("Attack functionality is not implemented for Substitution cipher.");
                     return;
@@ -314,10 +284,10 @@ public class HelloApplication extends Application {
             case "One Time Pad" -> {
                 if ("Encrypt".equals(action)) {
                     Cryptology.pText = inputText;
-                    result = cryptology.EncOne();
+                    result.append(cryptology.EncOne());
                 } else if ("Decrypt".equals(action)) {
                     Cryptology.cText = inputText;
-                    result = cryptology.DecOne();
+                    result.append(cryptology.DecOne());
                 } else if ("Attack".equals(action)) {
                     showAlert("Attack functionality is not implemented for One Time Pad cipher.");
                     return;
@@ -326,10 +296,10 @@ public class HelloApplication extends Application {
             case "Playfair" -> {
                 if ("Encrypt".equals(action)) {
                     Cryptology.pText = inputText;
-                    result = cryptology.EncPlay();
+                    result.append(cryptology.EncPlay());
                 } else if ("Decrypt".equals(action)) {
                     Cryptology.cText = inputText;
-                    result = cryptology.DecPlay();
+                    result.append(cryptology.DecPlay());
                 } else if ("Attack".equals(action)) {
                     showAlert("Attack functionality is not implemented for Playfair cipher.");
                     return;
@@ -346,11 +316,43 @@ public class HelloApplication extends Application {
                     showAlert("Attack functionality is not implemented for DES cipher.");
                     return;
                 }
-                result = des.getOutputText();
+                result.append(des.getOutputText());
+            }
+            case "AES" -> {
+                aes = new AES(keyText);
+                if ("Encrypt".equals(action)) {
+                    content.delete(0, content.length());
+                    content.append(aes.encrypt(inputText));
+//                    outputTextArea.setText(content.toString());
+                } else if ("Decrypt".equals(action)) {
+//                    result.append(aes.decrypt(inputText));
+                    String ss = aes.decrypt(content.toString());
+                    content.delete(0, content.length());
+                    content.append(ss);
+                    System.out.println(content.toString());
+//                    outputTextArea.setText(content.toString());
+                } else {
+                    showAlert("Attack functionality is not implemented for AES cipher.");
+                    return;
+                }
             }
         }
-        outputTextArea.setText(result);
+        outputTextArea.setText(content.toString());
+//        outputTextArea.setText(result.toString());
     }
+
+//    private String convertNonPrintableToVisible(String input) {
+//        StringBuilder visibleText = new StringBuilder();
+//        for (char c : input.toCharArray()) {
+//            if (Character.isISOControl(c)) {
+//                visibleText.append(String.format("\\u%04x", (int) c));
+//            } else {
+//                visibleText.append(c);
+//            }
+//        }
+//        return visibleText.toString();
+//    }
+
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Error");

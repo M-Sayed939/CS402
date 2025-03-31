@@ -1,32 +1,246 @@
-Round 1: Left = 00FF0920, Right = 0B9C2147, Round Key = F0BE66188798
-Round 2: Left = 0B9C2147, Right = 351D49D6, Round Key = E0BE7694343C
-Round 3: Left = 351D49D6, Right = CA068420, Round Key = E4F676291AE4
-Round 4: Left = CA068420, Right = 036EF83B, Round Key = E6D77210E8B3
-Round 5: Left = 036EF83B, Right = 3D1B59FB, Round Key = EED373270C15
-Round 6: Left = 3D1B59FB, Right = D3CAAA49, Round Key = AFD35B8B21D2
-Round 7: Left = D3CAAA49, Right = 665CBC08, Round Key = 2F53DB25C305
-Round 8: Left = 665CBC08, Right = EE3828A6, Round Key = 3F59D95204C6
-Round 9: Left = EE3828A6, Right = 0AABD963, Round Key = 1F59D950B156
-Round 10: Left = 0AABD963, Right = CBD23CA6, Round Key = 1F69DD25A4A8
-Round 11: Left = CBD23CA6, Right = 1DF2323C, Round Key = 1F6D8D683C43
-Round 12: Left = 1DF2323C, Right = B80FC892, Round Key = 5B2DAD2EC03E
-Round 13: Left = B80FC892, Right = 8B45B98B, Round Key = D9ACAD055DC2
-Round 14: Left = 8B45B98B, Right = DC0E0711, Round Key = D1AEAE8C8071
-Round 15: Left = DC0E0711, Right = EC12353A, Round Key = F0BEA6C3CE44
-Round 16: Left = EC12353A, Right = 65A898DE, Round Key = F0BE26419A0A
-Round 1: Left = 001F0E18, Right = F766B0D1, Round Key = F0BE66188798
-Round 2: Left = F766B0D1, Right = F5701E92, Round Key = E0BE7694343C
-Round 3: Left = F5701E92, Right = 237AAEDC, Round Key = E4F676291AE4
-Round 4: Left = 237AAEDC, Right = 116EE083, Round Key = E6D77210E8B3
-Round 5: Left = 116EE083, Right = D4D7972E, Round Key = EED373270C15
-Round 6: Left = D4D7972E, Right = D03F41AD, Round Key = AFD35B8B21D2
-Round 7: Left = D03F41AD, Right = E5C45B89, Round Key = 2F53DB25C305
-Round 8: Left = E5C45B89, Right = 84811317, Round Key = 3F59D95204C6
-Round 9: Left = 84811317, Right = 9122F1C4, Round Key = 1F59D950B156
-Round 10: Left = 9122F1C4, Right = 436297DB, Round Key = 1F69DD25A4A8
-Round 11: Left = 436297DB, Right = A9273B5E, Round Key = 1F6D8D683C43
-Round 12: Left = A9273B5E, Right = EF952C31, Round Key = 5B2DAD2EC03E
-Round 13: Left = EF952C31, Right = 1B25084B, Round Key = D9ACAD055DC2
-Round 14: Left = 1B25084B, Right = 7C2B634A, Round Key = D1AEAE8C8071
-Round 15: Left = 7C2B634A, Right = C0E23F91, Round Key = F0BEA6C3CE44
-Round 16: Left = C0E23F91, Right = 3DE297E1, Round Key = F0BE26419A0A
+Initial State:
+54 4f 4e 20 
+77 6e 69 54 
+6f 65 6e 77 
+20 20 65 6f 
+
+After AddRoundKey(0):
+00 3c 6e 47 
+1f 4e 22 74 
+0e 08 1b 31 
+54 59 0b 1a 
+
+After SubBytes(1):
+63 eb 9f a0 
+c0 2f 93 92 
+ab 30 af c7 
+20 cb 2b a2 
+
+After ShiftRows(1):
+63 eb 9f a0 
+2f 93 92 c0 
+af c7 ab 30 
+a2 20 cb 2b 
+
+After MixColumns(1):
+ba 84 e8 1b 
+75 a4 8d 40 
+f4 8d 06 7d 
+7a 32 0e 5d 
+
+After AddRoundKey(1):
+58 15 59 cd 
+47 b6 d4 39 
+08 1c e2 df 
+8b ba e8 ce 
+
+After SubBytes(2):
+6a 59 cb bd 
+a0 4e 48 12 
+30 9c 98 9e 
+3d f4 9b 8b 
+
+After ShiftRows(2):
+6a 59 cb bd 
+4e 48 12 a0 
+98 9e 30 9c 
+8b 3d f4 9b 
+
+After MixColumns(2):
+15 c9 7f 9d 
+ce 4d 4b c2 
+89 71 be 88 
+65 47 97 cd 
+
+After AddRoundKey(2):
+43 0e 09 3d 
+c6 57 08 f8 
+a9 c0 eb 7f 
+62 c8 fe 37 
+
+After SubBytes(3):
+1a ab 01 27 
+b4 5b 30 41 
+d3 ba e9 d2 
+aa e8 bb 9a 
+
+After ShiftRows(3):
+1a ab 01 27 
+5b 30 41 b4 
+e9 d2 d3 ba 
+9a aa e8 bb 
+
+After MixColumns(3):
+aa 65 fa 88 
+16 0c 05 3a 
+3d c1 de 2a 
+b3 4b 5a 0a 
+
+After AddRoundKey(3):
+78 70 99 4b 
+76 76 3c 39 
+30 7d 37 34 
+54 23 5b f1 
+
+After SubBytes(4):
+bc 51 ee b3 
+38 38 eb 12 
+04 ff 9a 18 
+20 26 39 a1 
+
+After ShiftRows(4):
+bc 51 ee b3 
+38 eb 12 38 
+9a 18 04 ff 
+a1 20 26 39 
+
+After MixColumns(4):
+10 bc d3 f3 
+d8 94 e0 e0 
+53 ea 9e 25 
+24 40 73 7b 
+
+After AddRoundKey(4):
+b1 08 04 e7 
+ca fc b1 b2 
+51 54 c9 6c 
+ed e1 d3 20 
+
+After SubBytes(5):
+c8 30 f2 94 
+74 b0 c8 37 
+d1 20 dd 50 
+55 f8 66 b7 
+
+After ShiftRows(5):
+c8 30 f2 94 
+b0 c8 37 74 
+dd 50 d1 20 
+b7 55 f8 66 
+
+After MixColumns(5):
+2a 26 8f e9 
+78 1e 0c 7a 
+1b a7 6f 0a 
+5b 62 00 3f 
+
+After AddRoundKey(5):
+9b 23 5d 2f 
+51 5f 1c 38 
+20 22 bd 91 
+68 f0 32 56 
+
+After SubBytes(6):
+14 26 4c 15 
+d1 cf 9c 07 
+b7 93 7a 81 
+45 8c 23 b1 
+
+After ShiftRows(6):
+14 26 4c 15 
+cf 9c 07 d1 
+7a 81 b7 93 
+b1 45 8c 23 
+
+After MixColumns(6):
+a9 37 aa f2 
+ae d8 0c 21 
+e7 6c b1 9c 
+f0 fd 67 3b 
+
+After AddRoundKey(6):
+14 8f c0 5e 
+93 a4 60 0f 
+25 2b 24 92 
+77 e8 40 75 
+
+After SubBytes(7):
+fa 73 ba 58 
+dc 49 d0 76 
+3f f1 36 4f 
+f5 9b 09 9d 
+
+After ShiftRows(7):
+fa 73 ba 58 
+49 d0 76 dc 
+36 4f 3f f1 
+9d f5 9b 09 
+
+After MixColumns(7):
+9f 37 51 37 
+af ec 8c fa 
+63 39 04 66 
+4b fb b1 d7 
+
+After AddRoundKey(7):
+53 43 4f 85 
+39 06 0a 52 
+8e 93 3b 57 
+5d f8 95 bd 
+
+After SubBytes(8):
+ed 1a 84 97 
+12 6f 67 00 
+19 dc e2 5b 
+4c 41 2a 7a 
+
+After ShiftRows(8):
+ed 1a 84 97 
+6f 67 00 12 
+e2 5b 19 dc 
+7a 4c 41 2a 
+
+After MixColumns(8):
+e8 8a 4b f5 
+74 75 ee e6 
+d3 1f 75 58 
+55 8a 0c 38 
+
+After AddRoundKey(8):
+66 70 af a3 
+25 ce d3 73 
+3c 5a 0f 13 
+74 a8 0a 54 
+
+After SubBytes(9):
+33 51 79 0a 
+3f 8b 66 8f 
+eb be 76 7d 
+92 c2 67 20 
+
+After ShiftRows(9):
+33 51 79 0a 
+8b 66 8f 3f 
+76 7d eb be 
+20 92 c2 67 
+
+After MixColumns(9):
+b6 e7 51 8c 
+84 88 98 ca 
+34 60 66 fb 
+e8 d7 70 51 
+
+After AddRoundKey(9):
+09 a2 f0 7b 
+66 d1 fc 3b 
+8b 9a e6 30 
+78 65 c4 89 
+
+After SubBytes(10):
+01 3a 8c 21 
+33 3e b0 e2 
+3d b8 8e 04 
+bc 4d 1c a7 
+
+After ShiftRows(10):
+01 3a 8c 21 
+3e b0 e2 33 
+8e 04 3d b8 
+a7 bc 4d 1c 
+
+After AddRoundKey(10):
+29 57 40 1a 
+c3 14 22 02 
+50 20 99 d7 
+5f f6 b3 3a 
+

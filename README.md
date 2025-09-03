@@ -31,17 +31,17 @@ This repository includes implementations of the following ciphers and algorithms
       * Implementation of a basic hashing function.
 
 -----
-
 ## 🚀 Getting Started
 
-Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+Follow these instructions to get a copy of the project up and running on your local machine.
 
 ### Prerequisites
 
 You will need to have the following installed on your system:
 
-  * A C++ compiler (like GCC/G++) or Python 3.x, depending on the implementation language.
-  * An IDE or code editor of your choice (e.g., VS Code, Code::Blocks, PyCharm).
+  * **JDK 11** or higher.
+  * **JavaFX SDK** (if not bundled with your JDK).
+  * An IDE like **IntelliJ IDEA**, **Eclipse**, or **VS Code** with Java support is highly recommended for easier project management.
 
 ### Installation & Usage
 
@@ -53,36 +53,9 @@ You will need to have the following installed on your system:
     ```bash
     cd CS402
     ```
-3.  Browse to the specific algorithm folder you wish to run. For example, to run the Caesar Cipher:
-    ```bash
-    cd "Classical Ciphers/Caesar Cipher"
-    ```
-4.  **Compile and run** the code. For a C++ project, you might use:
-    ```bash
-    g++ main.cpp -o caesar
-    ./caesar
-    ```
-    For a Python project:
-    ```bash
-    python main.py
-    ```
+3.  **Open the project** in your IDE (e.g., IntelliJ IDEA).
+4.  **Configure the JavaFX SDK** for the project if required. This usually involves setting the VM options to point to the JavaFX libraries.
+5.  **Build the project** to compile the source code.
+6.  **Run the main application class** to launch the GUI.
 
------
-
-## 📁 Repository Structure
-
-The repository is organized as follows:
-
-```
-└── CS402/
-    ├── Classical Ciphers/
-    │   ├── Caesar Cipher/
-    │   ├── Hill Cipher/
-    │   └── ...
-    ├── Modern Symmetric Ciphers/
-    │   ├── AES/
-    │   └── DES/
-    ├── Asymmetric Ciphers/
-    │   └── RSA/
-    └── README.md
-```
+*Alternatively, if your project is configured with a build tool like Maven or Gradle, you can use their respective commands to run the application.*
